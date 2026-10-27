@@ -1,0 +1,30 @@
+name: Auto-Update README
+
+on:
+  schedule:
+    # Runs every day at midnight UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Adds a button in GitHub to run it manually
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Download your repository code
+      - uses: actions/checkout@v4
+
+      # 2. Run the script to modify the README
+      - name: Update the README content
+        run: |
+          echo "This README was last updated automatically on $(date)" >> README.md
+          # If you have a custom script, run it here instead (e.g., node update.js)
+
+      # 3. Commit and push the changes back to GitHub
+      - name: Commit and Push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          # The '|| exit 0' prevents the workflow from crashing if there are no new changes
+          git commit -m "Auto-updated README" || exit 0
+          git push
